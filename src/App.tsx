@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { todoApi } from "./api/todo";
 import { Form } from "./Form";
+import { Todos } from "./Todos";
 import "./App.css";
 
 type TodoStatus = "TODO" | "INPROGRESS" | "DONE";
@@ -91,36 +92,11 @@ const App: React.FC = () => {
                 createTodo={createTodo}
             />
 
-            <ul>
-                {todos.map((todo) => {
-                    return (
-                        <li key={todo.id}>
-                            <span>{todo.text}</span>
-                            <select
-                                value={todo.status}
-                                onChange={(e) =>
-                                    updateStatus(
-                                        todo.id,
-                                        e.target.value as
-                                            | "TODO"
-                                            | "INPROGRESS"
-                                            | "DONE"
-                                    )
-                                }
-                            >
-                                <option value={"TODO"}>Todo</option>
-                                <option value={"INPROGRESS"}>
-                                    In Progress
-                                </option>
-                                <option value={"DONE"}>Done</option>
-                            </select>
-                            <button onClick={() => deleteTodo(todo.id)}>
-                                Delete
-                            </button>
-                        </li>
-                    );
-                })}
-            </ul>
+            <Todos
+                todos={todos}
+                updateStatus={updateStatus}
+                deleteTodo={deleteTodo}
+            />
         </main>
     );
 };
