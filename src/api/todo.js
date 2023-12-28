@@ -37,6 +37,20 @@ class TodoAPI {
         }
     }
 
+    async deleteOne(id) {
+        try {
+            const response = await fetch(`${this.endpoint}/tasks/${id}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
 
     async updateStatus(id, status) {
         try {

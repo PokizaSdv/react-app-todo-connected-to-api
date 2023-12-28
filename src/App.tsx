@@ -64,7 +64,20 @@ const App: React.FC = () => {
             });
     };
 
-    
+    const deleteTodo = (id: string): void => {
+        todoApi
+            .deleteOne(id)
+            .then(() => {
+                setTodos((prevTodos) =>
+                    prevTodos.filter((todo) => todo.id !== id)
+                );
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    const isSubmitButtonDisabled = !todoInputValue.length;
 
     return (
         <main>
@@ -79,7 +92,7 @@ const App: React.FC = () => {
                         onChange={(e) => handleTodoInputChange(e.target.value)}
                     />
                 </label>
-                <button type="submit">
+                <button type="submit" disabled={isSubmitButtonDisabled}>
                     Add Todo
                 </button>
             </form>
@@ -105,6 +118,9 @@ const App: React.FC = () => {
                             <option value={"INPROGRESS"}>In Progress</option>
                             <option value={"DONE"}>Done</option>
                         </select>
+                        <button onClick={() => deleteTodo(todo.id)}>
+                            Delete
+                        </button>
                     </li>
                 );
             })}
