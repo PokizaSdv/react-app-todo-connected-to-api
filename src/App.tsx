@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { todoApi } from "./api/todo"
+import { todoApi } from "./api/todo";
+import { Form } from "./Form";
 import "./App.css";
 
 type TodoStatus = "TODO" | "INPROGRESS" | "DONE";
@@ -25,7 +26,7 @@ const App: React.FC = () => {
             });
     }, []);
 
-    const handleTodoInputChange = (value: string): void => {
+    const handleTodoInputChange = (value: string) => {
         setTodoInputValue(value);
     };
 
@@ -48,7 +49,7 @@ const App: React.FC = () => {
             });
     };
 
-    const updateStatus = (id: string, status: TodoStatus): void => {
+    const updateStatus = (id: string, status: TodoStatus) => {
         todoApi
             .updateStatus(id, status)
             .then((_) => {
@@ -64,7 +65,7 @@ const App: React.FC = () => {
             });
     };
 
-    const deleteTodo = (id: string): void => {
+    const deleteTodo = (id: string)=> {
         todoApi
             .deleteOne(id)
             .then(() => {
@@ -83,48 +84,43 @@ const App: React.FC = () => {
         <main>
             <h1>Todo App</h1>
 
-            <form onSubmit={createTodo}>
-                <label>
-                    Todo:
-                    <input
-                        type="text"
-                        value={todoInputValue}
-                        onChange={(e) => handleTodoInputChange(e.target.value)}
-                    />
-                </label>
-                <button type="submit" disabled={isSubmitButtonDisabled}>
-                    Add Todo
-                </button>
-            </form>
+            <Form
+                isSubmitDisabled={isSubmitButtonDisabled}
+                todoValue={todoInputValue}
+                handleTodoValue={handleTodoInputChange}
+                createTodo={createTodo}
+            />
 
             <ul>
-            {todos.map((todo) => {
-                return (
-                    <li key={todo.id}>
-                        <span>{todo.text}</span>
-                        <select
-                            value={todo.status}
-                            onChange={(e) =>
-                                updateStatus(
-                                    todo.id,
-                                    e.target.value as
-                                        | "TODO"
-                                        | "INPROGRESS"
-                                        | "DONE"
-                                )
-                            }
-                        >
-                            <option value={"TODO"}>Todo</option>
-                            <option value={"INPROGRESS"}>In Progress</option>
-                            <option value={"DONE"}>Done</option>
-                        </select>
-                        <button onClick={() => deleteTodo(todo.id)}>
-                            Delete
-                        </button>
-                    </li>
-                );
-            })}
-        </ul>
+                {todos.map((todo) => {
+                    return (
+                        <li key={todo.id}>
+                            <span>{todo.text}</span>
+                            <select
+                                value={todo.status}
+                                onChange={(e) =>
+                                    updateStatus(
+                                        todo.id,
+                                        e.target.value as
+                                            | "TODO"
+                                            | "INPROGRESS"
+                                            | "DONE"
+                                    )
+                                }
+                            >
+                                <option value={"TODO"}>Todo</option>
+                                <option value={"INPROGRESS"}>
+                                    In Progress
+                                </option>
+                                <option value={"DONE"}>Done</option>
+                            </select>
+                            <button onClick={() => deleteTodo(todo.id)}>
+                                Delete
+                            </button>
+                        </li>
+                    );
+                })}
+            </ul>
         </main>
     );
 };
