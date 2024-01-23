@@ -1,11 +1,13 @@
 import { useState } from "react";
+import _ from "lodash";
 
-
- export const todoReducer = (state: any, action:any) => {
+export const todoReducer = (state: any, action: any) => {
+    const copy = _.cloneDeep(state)
     if (action.type === "INIT") {
         return action.payload;
     } else if (action.type === "ADD_TODO") {
-        return [...state, action.payload];
+        copy.push(action.payload)
+        return copy;
     } else if (action.type === "UPDATE_TODO") {
         const {
             payload: { id, status }
@@ -13,7 +15,7 @@ import { useState } from "react";
         //or
         // const id = action.payload.id
         // const status = action.payload.status
-        const updatedTodos = state.map((todo: any) =>
+        const updatedTodos = copy.map((todo: any) =>
             todo.id === id ? { ...todo, status } : todo
         );
         return updatedTodos;
@@ -28,18 +30,16 @@ import { useState } from "react";
         // }
         // return state;
     } else if (action.type === "DELETE_TODO") {
-        return state.filter((todo: any) => todo.id !== action.payload.id);
+        return copy.filter((todo: any) => todo.id !== action.payload.id);
     }
 };
 
+// const useMyReducer = (reducer: any, initialState: any) => {
+//     const [state, setState] = useState(initialState);
 
-
-const useMyReducer = (reducer: any, initialState: any) => {
-    const [state, setState] = useState(initialState);
-
-    const dispatch = (action: any) => {
-        const newState = reducer(state, action);
-        setState(newState);
-    };
-    return [state, dispatch];
-};
+//     const dispatch = (action: any) => {
+//         const newState = reducer(state, action);
+//         setState(newState);
+//     };
+//     return [state, dispatch];
+// };
