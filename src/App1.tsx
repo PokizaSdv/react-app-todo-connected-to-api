@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
+import { todoReducer } from "./todoReducer";
 import { todoApi } from "./api/todo";
 import { Form } from "./Form";
 import { Todos } from "./Todos";
@@ -6,21 +7,18 @@ import "./App.css";
 
 type TodoStatus = "TODO" | "INPROGRESS" | "DONE";
 
-type Todo = {
-    id: string;
-    text: string;
-    status: TodoStatus;
-};
-
 const App: React.FC = () => {
-    const [todos, setTodos] = useState<Todo[]>([]);
     const [todoInputValue, setTodoInputValue] = useState<string>("");
+    const [todos, dispatch] = useReducer(todoReducer, []);
 
     useEffect(() => {
         todoApi
             .getAll()
             .then((response) => {
-                setTodos(response.data);
+                dispatch({
+                    type: "INIT",
+                    payload: response.data
+                });
             })
             .catch((err) => {
                 console.log(err);
@@ -41,8 +39,9 @@ const App: React.FC = () => {
             .create(todoInputValue)
             .then((response) => {
                 setTodoInputValue("");
-                setTodos((prevTodos) => {
-                    return [...prevTodos, response.data];
+                dispatch({
+                    type: "ADD_TODO",
+                    payload: response.data
                 });
             })
             .catch((err) => {
@@ -54,37 +53,29 @@ const App: React.FC = () => {
         todoApi
             .updateStatus(id, status)
             .then((_) => {
-                setTodos((prevTodos) => {
-                    const copyTodos = prevTodos.map((todo) =>
-                        todo.id === id ? { ...todo, status } : todo
-                    );
-                    return copyTodos;
+                dispatch({
+                    type: "UPDATE_TODO",
+                    payload: {
+                        id: id,
+                        status: status
+                    }
                 });
-                //setTodos((prevTodos) => {
-                //     const copyTodos = [];
-                //     for(let i = 0; i < todos.length; i++) {
-                //         const todo = todos[i];
-                //         if(todo.id === id) {
-                //             const copy = {...todo};
-                //             copy.status = status;
-                //             copyTodos.push(copy)
-                //     } else {
-                //         copyTodos.push(todo)
-                //     }
-                // })
             })
             .catch((err) => {
                 console.log(err);
             });
     };
 
-    const deleteTodo = (id: string)=> {
+    const deleteTodo = (id: string) => {
         todoApi
             .deleteOne(id)
             .then(() => {
-                setTodos((prevTodos) =>
-                    prevTodos.filter((todo) => todo.id !== id)
-                );
+                dispatch({
+                    type: "DELETE_TODO",
+                    payload: {
+                        id: id
+                    }
+                });
             })
             .catch((err) => {
                 console.log(err);
